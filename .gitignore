@@ -1,4 +1,12 @@
+
 1000
 2000
 bin/
 index
+*.class
+
+# Package Files #
+*.jar
+*.war
+*.ear
+
