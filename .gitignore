@@ -4,6 +4,11 @@
 bin/
 index
 ir/*.class
+pagerank/*.class
+
+
+*.index
+*.data
 
 # Package Files #
 *.jar
