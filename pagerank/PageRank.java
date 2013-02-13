@@ -158,7 +158,13 @@ public class PageRank {
 	 * Computes the pagerank of each document.
 	 */
 	void computePagerank(int numberOfDocs) {
-		System.out.println("FUCK OFF :DDD");
+		//System.out.println("FUCK OFF :DDD");
+		//TODO: Compute P and J
+		// Generate G
+		//  x =(0,,,0)
+		//  x'=(1,0,,,0)
+		// while (x-x' > e)
+		// 		
 	}
 
 	/* --------------------------------------------- */

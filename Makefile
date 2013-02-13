@@ -7,3 +7,9 @@ build:
 
 run: build
 	java -Xmx1024m -cp .:pdfbox:megamap ir.SearchGUI -d 1000 -m
+
+buildPagerank:
+	javac pagerank/PageRank.java
+
+runPagerank:
+	java pagerank.PageRank svwiki_links/links1000.txt
