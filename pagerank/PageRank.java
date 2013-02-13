@@ -222,35 +222,63 @@ public class PageRank
         // }
         // System.out.println(J);
         //
-        
-        
+
+        double[] x = new double[numberOfDocs];
+        double[] xprime = new double[numberOfDocs];
+        xprime[0] = 1;
+
+
+        //Approx pagerank
+        for (int loop = 0; loop < 1000; loop++)
+        {
+            for (int i = 0; i < numberOfDocs; i++)
+            {
+                if (link.get(i) != null)
+                    for (Integer j : link.get(i).keySet())
+                    {
+                        xprime[j] += x[i] * (1 - BORED) / out[i];
+                    }
+                xprime[i] += (BORED) / numberOfDocs;
+                xprime[i] += numberOfSinks / numberOfDocs / numberOfDocs;
+            }
+            for (int i = 0; i < numberOfDocs; i++)
+            {
+                x[i] = xprime[i];
+                xprime[i] = 0;
+            }
+
+        }
     }
 
-    private class IntDoub implements Comparable {
-    	public int key;
-    	public double value;
+    private class IntDoub implements Comparable
+    {
+        public int key;
+        public double value;
 
-    	public IntDoub(int key, double value) {
-    		this.key = key;
-    		this.value = value;
-    	}
-    	public int compareTo(Object o){
-    		if(o instanceof IntDoub){
-    			if(value > ((IntDoub) o).value)
-    				return -1;
-    			else if(value == ((IntDoub) o).value)
-    				return 0;
-    			else 
-    				return 1;
+        public IntDoub(int key, double value)
+        {
+            this.key = key;
+            this.value = value;
+        }
+        public int compareTo(Object o)
+        {
+            if (o instanceof IntDoub)
+            {
+                if (value > ((IntDoub) o).value)
+                    return -1;
+                else if (value == ((IntDoub) o).value)
+                    return 0;
+                else
+                    return 1;
 
-    		}
-    		else 
-    			return 1;
-    	}
-    	public String toString()
-    	{
-    		return " " + key +". " + value;
-    	} 
+            }
+            else
+                return 1;
+        }
+        public String toString()
+        {
+            return " " + key + ". " + value;
+        }
 
     }
 
