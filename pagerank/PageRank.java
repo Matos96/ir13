@@ -222,45 +222,8 @@ public class PageRank
         // }
         // System.out.println(J);
         //
-        double[] x = new double[numberOfDocs];
-        double[] xprime = new double[numberOfDocs];
-        xprime[0] = 1;
-        double d;
-        do
-        {
-            for (int i = 0; i < numberOfDocs ; i++)
-            {
-                x[i] = xprime[i];
-                xprime[i] = 0;
-            }
-
-            // xprime = x * G;
-            for (int j = 0; j < numberOfDocs; j++)
-            {
-
-                for (int i = 0; i < numberOfDocs; i++)
-                {
-                    xprime[j] += x[i] * G[i][j];
-                }
-            }
-
-            d = 0;
-            for (int i = 0; i < numberOfDocs; i++)
-            {
-                d += Math.abs(x[i] - xprime[i]);
-            }
-            // System.out.print(d);
-        }
-        while (d > EPSILON);
         
-       	ArrayList<IntDoub> m = new ArrayList<IntDoub>();
-        for(int i = 0; i < numberOfDocs; i++) {
-        	m.add(new IntDoub(i, xprime[i]));
-        }
-        Collections.sort(m);
-        for(int i = 0 ; i < NUMBER_OUT_PRINTS; i++) {
-        	System.out.println(i + ". " + docName[m.get(i).key] + ". " + m.get(i).value);
-        }
+        
     }
 
     private class IntDoub implements Comparable {
