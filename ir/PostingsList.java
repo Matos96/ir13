@@ -127,7 +127,7 @@ public class PostingsList implements Serializable, Comparable<PostingsList>
     }
     @SuppressWarnings("unchecked")
     @Override
-    protected Object clone() throws CloneNotSupportedException
+    protected Object clone()
     {
         // super.clone();
         PostingsList returnList = new PostingsList();
@@ -140,6 +140,15 @@ public class PostingsList implements Serializable, Comparable<PostingsList>
         PostingsList returnList = new PostingsList();
         int i = 0;
         int j = 0;
+        if(secondList == null && firstList == null) {
+            return returnList;
+        }
+        if(secondList == null) {
+            return (PostingsList)firstList.clone();
+        }
+        if(firstList == null) {
+            return (PostingsList) secondList.clone();
+        }
         while (i < secondList.size() && j < firstList.size())
         {
             int firstDoc = firstList.get(j).docID;

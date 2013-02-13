@@ -341,15 +341,17 @@ public class MegaIndex implements Index
             for (String term : query.terms)
             {
                 PostingsList pl = getPostings(term);
-                if (pl == null) 
-                	continue;
-                double wtq = Math.log10(numberOfDocs / pl.size());
+                if (pl == null)
+                    continue;
+                double idf_for_pl = Math.log10(numberOfDocs / pl.size());
+                double wtq = 1 + Math.log10(1); // log(1) should be number of occurenses 
+                wtq *= idf_for_pl;
                 for (PostingsEntry post : pl.list)
                 {
                     PostingsEntry scoreEntry = all.getByDocID(post.docID);
                     if (post.offsets.size() != 0)
                     {
-                    	scoreEntry.score += (1 + Math.log10(post.offsets.size())) * wtq;;
+                        scoreEntry.score += (1 + Math.log10(post.offsets.size())) * idf_for_pl * wtq;
                         // scoreEntry.score += (post.offsets.size()) * wtq;;
                     }
                 }
