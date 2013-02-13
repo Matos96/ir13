@@ -225,8 +225,7 @@ public class PageRank
 
         double[] x = new double[numberOfDocs];
         double[] xprime = new double[numberOfDocs];
-        xprime[0] = 1;
-
+        x[0] = 1;
 
         //Approx pagerank
         for (int loop = 0; loop < 1000; loop++)
@@ -234,12 +233,14 @@ public class PageRank
             for (int i = 0; i < numberOfDocs; i++)
             {
                 if (link.get(i) != null)
+                {
                     for (Integer j : link.get(i).keySet())
                     {
                         xprime[j] += x[i] * (1 - BORED) / out[i];
                     }
-                xprime[i] += (BORED) / numberOfDocs;
-                xprime[i] += numberOfSinks / numberOfDocs / numberOfDocs;
+                }
+                xprime[i] += (BORED) / (double) numberOfDocs;
+                xprime[i] += (double) numberOfSinks / (double)(numberOfDocs * numberOfDocs);
             }
             for (int i = 0; i < numberOfDocs; i++)
             {
@@ -247,6 +248,16 @@ public class PageRank
                 xprime[i] = 0;
             }
 
+        }
+        ArrayList<IntDoub> m = new ArrayList<IntDoub>();
+        for (int i = 0; i < numberOfDocs; i++)
+        {
+            m.add(new IntDoub(i, x[i]));
+        }
+        Collections.sort(m);
+        for (int i = 0 ; i < NUMBER_OUT_PRINTS; i++)
+        {
+            System.out.println((1+i) + ". \t" + docName[m.get(i).key] + ". \t" + m.get(i).value);
         }
     }
 
