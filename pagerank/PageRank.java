@@ -259,7 +259,7 @@ public class PageRank
         }
         Collections.sort(m);
         for(int i = 0 ; i < NUMBER_OUT_PRINTS; i++) {
-        	System.out.println(i + ". " + docName[m.get(i).key] + ". " + m.get(i).value);
+        	System.out.println(i + ". \t" + docName[m.get(i).key] + ". \t" + m.get(i).value);
         }
     }
 
