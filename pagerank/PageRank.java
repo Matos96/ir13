@@ -20,6 +20,7 @@ public class PageRank
     final static int MAX_NUMBER_OF_DOCS = 2000000;
 
     final static int NUMBER_OUT_PRINTS = 50;
+    final static int MAX_NUMBER_OF_LOOPS_IN_MC = 50;
     /**
      * Mapping from document names to document numbers.
      */
@@ -179,37 +180,37 @@ public class PageRank
     void computePagerank(int numberOfDocs)
     {
 
-        //TODO: Compute P and J
-        double J = 1 / (double) numberOfDocs;
+        // //TODO: Compute P and J
+        // double J = 1 / (double) numberOfDocs;
 
-        double[][] G = new double[numberOfDocs][numberOfDocs];
-        for (int i = 0; i < numberOfDocs; i++)
-        {
-            int number_of_links = out[i];
-            if (link.get(i) != null)
-            {
-                for (Integer j : link.get(i).keySet())
-                {
-                    if (link.get(i).get(j))
-                    {
-                        // System.out.println("Här är ett tal :) " + 1 / number_of_links);
-                        G[i][j] = (1 / (double) number_of_links) * (1 - BORED) + BORED * J;
-                    }
-                }
-            }
-            if (number_of_links == 0)
-            {
-                for (int d = 0; d < numberOfDocs; d++ )
-                {
-                    if (d == i)
-                        continue;
-                    else
-                        G[i][d] = (1 / (double) (numberOfDocs - 1)) * (1 - BORED) + BORED * J;
-                    // G[i][d] = (1 / (double) (numberOfDocs - 1));
-                }
-            }
+        // double[][] G = new double[numberOfDocs][numberOfDocs];
+        // for (int i = 0; i < numberOfDocs; i++)
+        // {
+        //     int number_of_links = out[i];
+        //     if (link.get(i) != null)
+        //     {
+        //         for (Integer j : link.get(i).keySet())
+        //         {
+        //             if (link.get(i).get(j))
+        //             {
+        //                 // System.out.println("Här är ett tal :) " + 1 / number_of_links);
+        //                 G[i][j] = (1 / (double) number_of_links) * (1 - BORED) + BORED * J;
+        //             }
+        //         }
+        //     }
+        //     if (number_of_links == 0)
+        //     {
+        //         for (int d = 0; d < numberOfDocs; d++ )
+        //         {
+        //             if (d == i)
+        //                 continue;
+        //             else
+        //                 G[i][d] = (1 / (double) (numberOfDocs - 1)) * (1 - BORED) + BORED * J;
+        //             // G[i][d] = (1 / (double) (numberOfDocs - 1));
+        //         }
+        //     }
 
-        }
+        // }
         //           //Debugger
         // for (double[] i : G)
         // {
@@ -222,46 +223,61 @@ public class PageRank
         // }
         // System.out.println(J);
         //
-
+        //
+        //MC VERSION 4
         double[] x = new double[numberOfDocs];
-        double[] xprime = new double[numberOfDocs];
-        x[0] = 1;
-
-        //Approx pagerank
-        for (int loop = 0; loop < 1000; loop++)
+        int total_visits = 0;
+        Random r = new Random();
+        for (int n = 0 ; n < numberOfDocs ; n++)
         {
-            for (int i = 0; i < numberOfDocs; i++)
+            Hashtable<Integer, Boolean> current_table = link.get(n);
+            int current_position = n;
+            for (int m = 0; m < MAX_NUMBER_OF_LOOPS_IN_MC; m++)
             {
-                if (link.get(i) != null)
+                x[current_position]++;
+                total_visits++;
+                if (out[current_position] == 0)
                 {
-                    for (Integer j : link.get(i).keySet())
-                    {
-                        xprime[j] += x[i] * (1 - BORED) / out[i];
-                    }
+                    break;
                 }
-                xprime[i] += (BORED) / (double) numberOfDocs;
-                xprime[i] += (double) numberOfSinks / (double)(numberOfDocs * numberOfDocs);
-            }
-            for (int i = 0; i < numberOfDocs; i++)
-            {
-                x[i] = xprime[i];
-                xprime[i] = 0;
-            }
+                if (r.nextDouble() > BORED)
+                {
 
+                    int i = r.nextInt(current_table.size());
+                    int next = 0;
+                    for (Integer j : current_table.keySet())
+                    {
+                        if (next == i)
+                        {
+                            next = j;
+                            break;
+                        }
+                        next++;
+                    }
+                    current_position = next;
+                    current_table = link.get(next);
+                }
+                else
+                {
+                	int next = -1;
+                    do
+                    {
+                    	next = r.nextInt(numberOfDocs);
+                    } 
+                    while(next == current_position);
+                    current_position = next;
+                    current_table = link.get(next);
+                }
+            }
         }
-        ArrayList<IntDoub> m = new ArrayList<IntDoub>();
-        for (int i = 0; i < numberOfDocs; i++)
-        {
-            m.add(new IntDoub(i, x[i]));
+        for (int i = 0; i < numberOfDocs; i++) {
+        	x[i] = x[i] /total_visits; 
         }
-        Collections.sort(m);
-        for (int i = 0 ; i < NUMBER_OUT_PRINTS; i++)
-        {
-            System.out.println((1+i) + ". \t" + docName[m.get(i).key] + ". \t" + m.get(i).value);
-        }
+        
+
     }
 
-    private class IntDoub implements Comparable
+                       private class IntDoub implements Comparable
     {
         public int key;
         public double value;
