@@ -16,7 +16,6 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
 
-import pagerank.PageRank;
 
 import com.larvalabs.megamap.MegaMap;
 import com.larvalabs.megamap.MegaMapException;
@@ -24,7 +23,6 @@ import com.larvalabs.megamap.MegaMapManager;
 
 public class MegaIndex implements Index
 {
-
     /**
      * The index as a hash map that can also extend to secondary memory if
      * necessary.
@@ -78,7 +76,6 @@ public class MegaIndex implements Index
                 // invent a name for it.
                 index = manager.createMegaMap(generateFilename(), path, true,
                                               false);
-
             }
             else if (indexfiles.size() == 1)
             {
@@ -102,11 +99,23 @@ public class MegaIndex implements Index
                 if (m2 == null)
                 {
                     System.err
-                    .println("Couldn't retrieve the associations between docIDs and document names");
+                    .println("Couldn't retrieve the docLengths");
                 }
                 else
                 {
                     docLengths.putAll(m2);
+                }
+
+                HashMap<String, Double> m3 = (HashMap<String, Double>) index
+                                              .get("..pageRanking");
+                if (m3 == null)
+                {
+                    System.err
+                    .println("Couldn't retrieve the pageRanking");
+                }
+                else
+                {
+                    pageRanking.putAll(m3);
                 }
 
 
@@ -153,6 +162,7 @@ public class MegaIndex implements Index
         // Save the docID-filename association list in the MegaMap as well
         index.put("..docIDs", docIDs);
         index.put("..docLengths", docLengths);
+        index.put("..pageRanking", pageRanking);
         // Shutdown the MegaMap thread gracefully
         manager.shutdown();
     }
@@ -208,11 +218,30 @@ public class MegaIndex implements Index
                         if (m == null)
                         {
                             System.err
-                            .println("Couldn't retrieve the associations between docIDs and document names");
+                            .println("Couldn't retrieve the docLengths");
                         }
                         else
                         {
                             docLengths.putAll(m);
+                        }
+                        continue;
+                    }
+                    /* End of fixing docLength */
+
+
+                    /* Finxing docLength */
+                    if (s.equals("..pageRanking"))
+                    {
+                        HashMap<String, Double> m = (HashMap<String, Double>) index
+                                                     .get("..pageRanking");
+                        if (m == null)
+                        {
+                            System.err
+                            .println("Couldn't retrieve the pageRanking");
+                        }
+                        else
+                        {
+                            pageRanking.putAll(m);
                         }
                         continue;
                     }
@@ -338,30 +367,47 @@ public class MegaIndex implements Index
                 all = PostingsList.union(all, getPostings(term));
             }
 
-            for (String term : query.terms)
+            if (rankingType == Index.TF_IDF || rankingType == Index.COMBINATION)
             {
-                PostingsList pl = getPostings(term);
-                if (pl == null)
-                    continue;
-                double idf_for_pl = Math.log10(numberOfDocs / pl.size());
-                double wtq = 1 + Math.log10(1); // log(1) should be number of occurenses 
-                wtq *= idf_for_pl;
-                for (PostingsEntry post : pl.list)
+                for (String term : query.terms)
                 {
-                    PostingsEntry scoreEntry = all.getByDocID(post.docID);
-                    if (post.offsets.size() != 0)
+                    PostingsList pl = getPostings(term);
+                    if (pl == null)
+                        continue;
+                    double idf_for_pl = Math.log10(numberOfDocs / pl.size());
+                    double wtq = 1 + Math.log10(1); // log(1) should be number of occurenses
+                    wtq *= idf_for_pl;
+                    for (PostingsEntry post : pl.list)
                     {
-                        scoreEntry.score += (1 + Math.log10(post.offsets.size())) * idf_for_pl * wtq;
-                        // scoreEntry.score += (post.offsets.size()) * wtq;;
+                        PostingsEntry scoreEntry = all.getByDocID(post.docID);
+                        if (post.offsets.size() != 0)
+                        {
+                            scoreEntry.score += (1 + Math.log10(post.offsets.size())) * idf_for_pl * wtq;
+                            // scoreEntry.score += (post.offsets.size()) * wtq;;
+                        }
                     }
-                }
 
+                }
+                for (PostingsEntry post : all.list)
+                {
+                    // System.out.println(docLengths.get("" + post.docID));
+                    post.score /=   docLengths.get("" + post.docID);
+                    // System.out.println(docLengths.get("" + post.docID));
+                }
             }
-            for (PostingsEntry post : all.list)
+
+            if (rankingType == Index.PAGERANK || rankingType == Index.COMBINATION)
             {
-                // System.out.println(docLengths.get("" + post.docID));
-                post.score /=   docLengths.get("" + post.docID);
-                // System.out.println(docLengths.get("" + post.docID));
+                if (pageRanking != null)
+                    for (PostingsEntry pe : all.list)
+                    {
+                        int docID = pe.docID;
+                        System.out.println(docID);
+                        System.out.println(pageRanking.size());
+                        double score = (double) pageRanking.get("" + docID);
+                        System.out.println(score);
+                        pe.score += (score);
+                    }
             }
             Collections.sort(all.list);
             return all;

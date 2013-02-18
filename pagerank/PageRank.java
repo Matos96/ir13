@@ -77,6 +77,8 @@ public class PageRank
      */
     final static int MAX_NUMBER_OF_ITERATIONS = 1000;
 
+    public HashMap<Integer, Double> m;
+
     /* --------------------------------------------- */
 
     public PageRank(String filename)
@@ -236,48 +238,16 @@ public class PageRank
             x[i] = x[i] / total_visits;
         }
 
-        ArrayList<IntDoub> m = new ArrayList<IntDoub>();
+        m = new HashMap<Integer, Double>();
         for (int i = 0; i < numberOfDocs; i++)
         {
-            m.add(new IntDoub(i, x[i]));
+            m.put(i, x[i]);
         }
-        Collections.sort(m);
-        for (int i = 0 ; i < NUMBER_OUT_PRINTS; i++)
-        {
-            System.out.println((1 + i) + ". \t" + docName[m.get(i).key] + ". \t" + m.get(i).value);
-        }
-
-    }
-
-    private class IntDoub implements Comparable
-    {
-        public int key;
-        public double value;
-
-        public IntDoub(int key, double value)
-        {
-            this.key = key;
-            this.value = value;
-        }
-        public int compareTo(Object o)
-        {
-            if (o instanceof IntDoub)
-            {
-                if (value > ((IntDoub) o).value)
-                    return -1;
-                else if (value == ((IntDoub) o).value)
-                    return 0;
-                else
-                    return 1;
-
-            }
-            else
-                return 1;
-        }
-        public String toString()
-        {
-            return " " + key + ". " + value;
-        }
+        // Collections.sort(m);
+        // for (int i = 0 ; i < NUMBER_OUT_PRINTS; i++)
+        // {
+        //     System.out.println((1 + i) + ". \t" + docName[m.get(i).key] + ". \t" + m.get(i).value);
+        // }
 
     }
 

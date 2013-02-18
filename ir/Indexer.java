@@ -22,6 +22,8 @@ import org.apache.pdfbox.pdfparser.*;
 import org.apache.pdfbox.util.PDFTextStripper;
 import org.apache.pdfbox.pdmodel.PDDocument;
 
+import java.util.HashMap;
+
 /**
  * Processes a directory structure and indexes all PDF and text files.
  */
@@ -183,4 +185,27 @@ public class Indexer
     {
         index.insert(token, docID, offset);
     }
+
+    public void addPageRank(HashMap<Integer, Double> al)
+    {
+        for (String key : index.docIDs.keySet())
+        {
+            int keyInt = -1;
+            try
+            {
+                String value = index.docIDs.get(key);
+                int from = value.lastIndexOf('/');
+                int to = value.lastIndexOf('.');
+                keyInt = Integer.parseInt(value.substring(from + 1, to));
+            }
+            catch (Exception e)
+            {
+                System.err.println("Failed to parse!");
+                System.exit(-1);
+            }
+            index.pageRanking.put(key, al.get(keyInt));
+        }
+
+    }
+
 }
