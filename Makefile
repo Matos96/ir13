@@ -15,4 +15,4 @@ buildPagerank:
 	javac pagerank/PageRank.java
 
 runPagerank:
-	java pagerank.PageRank svwiki_links/links.txt
+	java pagerank.PageRank svwiki_links/links10000.txt
