@@ -352,7 +352,7 @@ public class MegaIndex implements Index
                     if (post.offsets.size() != 0)
                     {
                         scoreEntry.score += (1 + Math.log10(post.offsets.size())) * idf_for_pl * wtq;
-                        // scoreEntry.score += (post.offsets.size()) * wtq;;
+                        scoreEntry.score += (post.offsets.size()) * idf_for_pl;
                     }
                 }
 
