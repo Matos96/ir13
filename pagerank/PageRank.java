@@ -224,7 +224,9 @@ public class PageRank
         //
         double[] x = new double[numberOfDocs];
         double[] xprime = new double[numberOfDocs];
-        xprime[0] = 1;
+        for (int i = 0; i < numberOfDocs; i++) {
+            xprime[i] = 1/ (double)numberOfDocs;
+        }
         double d;
         do
         {
