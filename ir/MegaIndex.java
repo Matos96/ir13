@@ -24,7 +24,7 @@ import com.larvalabs.megamap.MegaMapManager;
 public class MegaIndex implements Index
 {
 
-    private static final double PAGERANK_MULTIPLYER = 8;
+    private static final double PAGERANK_MULTIPLYER = 4;
     /**
      * The index as a hash map that can also extend to secondary memory if
      * necessary.

@@ -241,7 +241,7 @@ public class PageRank
         m = new HashMap<Integer, Double>();
         for (int i = 0; i < numberOfDocs; i++)
         {
-            m.put(i, x[i]);
+            m.put(Integer.parseInt(docName[i]), x[i]);
         }
         // Collections.sort(m);
         // for (int i = 0 ; i < NUMBER_OUT_PRINTS; i++)

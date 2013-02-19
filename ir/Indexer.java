@@ -188,22 +188,22 @@ public class Indexer
 
     public void addPageRank(HashMap<Integer, Double> al)
     {
-        for (String key : index.docIDs.keySet())
+        for (String docID : index.docIDs.keySet())
         {
-            int keyInt = -1;
+            int fileInt = -1;
             try
             {
-                String value = index.docIDs.get(key);
+                String value = index.docIDs.get(docID);
                 int from = value.lastIndexOf('/');
                 int to = value.lastIndexOf('.');
-                keyInt = Integer.parseInt(value.substring(from + 1, to));
+                fileInt = Integer.parseInt(value.substring(from + 1, to));
             }
             catch (Exception e)
             {
                 System.err.println("Failed to parse!");
                 System.exit(-1);
             }
-            index.pageRanking.put(key, al.get(keyInt));
+            index.pageRanking.put(docID, al.get(fileInt));
         }
 
     }
