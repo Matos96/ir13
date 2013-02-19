@@ -22,7 +22,7 @@ public class PageRank
     final static int NUMBER_OUT_PRINTS = 50;
 
     final static int MAX_NUMBER_OF_LOOPS_IN_MC = 100;
-    final static int MAX_NUMBER_OF_STEPS_IN_MC = 5;
+    final static int MAX_NUMBER_OF_STEPS_IN_MC = 10;
 
     /**
      * Mapping from document names to document numbers.
