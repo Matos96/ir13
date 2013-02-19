@@ -23,6 +23,8 @@ import com.larvalabs.megamap.MegaMapManager;
 
 public class MegaIndex implements Index
 {
+
+    private static final double PAGERANK_MULTIPLYER = 8;
     /**
      * The index as a hash map that can also extend to secondary memory if
      * necessary.
@@ -402,11 +404,11 @@ public class MegaIndex implements Index
                     for (PostingsEntry pe : all.list)
                     {
                         int docID = pe.docID;
-                        System.out.println(docID);
-                        System.out.println(pageRanking.size());
+                        // System.out.println(docID);
+                        // System.out.println(pageRanking.size());
                         double score = (double) pageRanking.get("" + docID);
-                        System.out.println(score);
-                        pe.score += (score);
+                        // System.out.println(score);
+                        pe.score += (score) * PAGERANK_MULTIPLYER;
                     }
             }
             Collections.sort(all.list);
