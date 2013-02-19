@@ -182,7 +182,7 @@ public class PageRank
      */
     void computePagerank(int numberOfDocs)
     {
-        //MC VERSION 4
+        //MC VERSION 4 complete path stopping at dangling nodes  
         double[] x = new double[numberOfDocs];
         int total_visits = 0;
         Random r = new Random();
