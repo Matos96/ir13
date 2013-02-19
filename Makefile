@@ -9,7 +9,7 @@ run: build
 	java -Xmx1024m -cp .:pdfbox:megamap ir.SearchGUI -d 1000 -m
 
 runOLD: build
-	java -Xmx1024m -cp .:pdfbox:megamap ir.SearchGUI -i index_301748499 -m
+	java -Xmx1024m -cp .:pdfbox:megamap ir.SearchGUI -i index_221301344 -m
 
 buildPagerank:
 	javac pagerank/PageRank.java
