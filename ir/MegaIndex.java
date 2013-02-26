@@ -416,5 +416,4 @@ public class MegaIndex implements Index
         }
         return null;
     }
-
 }
