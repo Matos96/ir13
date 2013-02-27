@@ -28,6 +28,10 @@ public interface Index {
     public static final int PAGERANK = 1;
     public static final int COMBINATION = 2;
 
+    public static final double PAGERANK_MULTIPLYER = 4;
+    public static final double INDEX_ELIMINATON_CONSTANT = 0.25;
+
+
     public HashMap<String, String> docIDs = new HashMap<String,String>();
     public HashMap<String,Integer> docLengths = new HashMap<String,Integer>();
     public HashMap<String, Double> pageRanking = new HashMap<String, Double>();
@@ -37,6 +41,7 @@ public interface Index {
     public PostingsList getPostings( String token );
     public PostingsList search( Query query, int queryType, int rankingType );
     public void cleanup();
+    public int getNumberOfDocs();
 
 }
 

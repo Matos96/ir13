@@ -24,7 +24,6 @@ import com.larvalabs.megamap.MegaMapManager;
 public class MegaIndex implements Index
 {
 
-    private static final double PAGERANK_MULTIPLYER = 4;
     /**
      * The index as a hash map that can also extend to secondary memory if
      * necessary.
@@ -109,7 +108,7 @@ public class MegaIndex implements Index
                 }
 
                 HashMap<String, Double> m3 = (HashMap<String, Double>) index
-                                              .get("..pageRanking");
+                                             .get("..pageRanking");
                 if (m3 == null)
                 {
                     System.err
@@ -143,6 +142,10 @@ public class MegaIndex implements Index
         {
             e.printStackTrace();
         }
+    }
+    public int getNumberOfDocs()
+    {
+        return numberOfDocs;
     }
 
     /**
@@ -235,7 +238,7 @@ public class MegaIndex implements Index
                     if (s.equals("..pageRanking"))
                     {
                         HashMap<String, Double> m = (HashMap<String, Double>) index
-                                                     .get("..pageRanking");
+                                                    .get("..pageRanking");
                         if (m == null)
                         {
                             System.err
@@ -301,9 +304,10 @@ public class MegaIndex implements Index
         }
         list.add(docID, offset);
         HashSet<String> docSet = docTerms.get("" + docID);
-        if(docSet == null) {
+        if (docSet == null)
+        {
             docSet = new HashSet<String>();
-            docTerms.put("" +docID, docSet);
+            docTerms.put("" + docID, docSet);
         }
         docSet.add(token);
     }
@@ -371,7 +375,9 @@ public class MegaIndex implements Index
                 numberOfDocs = docIDs.size();
             for (String term : query.terms)
             {
-                all = PostingsList.union(all, getPostings(term));
+                PostingsList pl = getPostings(term);
+                if (pl != null && !termIsBad(pl.size()))
+                    all = PostingsList.union(all, pl);
             }
 
             if (rankingType == Index.TF_IDF || rankingType == Index.COMBINATION)
@@ -382,6 +388,10 @@ public class MegaIndex implements Index
                     if (pl == null)
                         continue;
                     double idf_for_pl = Math.log10(numberOfDocs / pl.size());
+                    if (termIsBad(pl.size()))
+                    {
+                        continue;
+                    }
                     double wtq = query.weights.get(term) * idf_for_pl;
                     for (PostingsEntry post : pl.list)
                     {
@@ -390,6 +400,7 @@ public class MegaIndex implements Index
                         if (post.offsets.size() != 0)
                         {
                             // scoreEntry.score += (1 + Math.log10(post.offsets.size())) * idf_for_pl * wtq;
+                            // System.out.println(scoreEntry.score);
                             scoreEntry.score += (post.offsets.size()) * idf_for_pl * wtq;
                         }
                     }
@@ -420,5 +431,9 @@ public class MegaIndex implements Index
             return all;
         }
         return null;
+    }
+    private boolean termIsBad(double size)
+    {
+        return size / (double)numberOfDocs > INDEX_ELIMINATON_CONSTANT;
     }
 }

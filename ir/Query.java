@@ -88,34 +88,41 @@ public class Query
             {
                 int docId = results.get(i).docID;
                 HashSet<String> docTerms = indexer.index.docTerms.get("" + docId);
-                System.out.println(docTerms.size());
+                // System.out.println(docTerms.size());
                 double docSize = (double) indexer.index.docLengths.get("" + docId);
                 for (String term : docTerms)
                 {
                     PostingsList pl = indexer.index.getPostings(term);
-                    double tf = 0;
-                    for (PostingsEntry pe : pl.list)
+                    if (!termIsBad(pl.size(), indexer.index.getNumberOfDocs()))
                     {
-                        if (pe.docID == docId)
+                        double tf = 0;
+                        for (PostingsEntry pe : pl.list)
                         {
-                            tf = pe.offsets.size();
-                            break;
+                            if (pe.docID == docId)
+                            {
+                                tf = pe.offsets.size();
+                                break;
+                            }
                         }
-                    }
-                    tf /= docSize;
+                        tf /= docSize;
 
-                    if (!weights.containsKey(term))
-                    {
-                        weights.put(term, tf * BETA * score);
-                        terms.add(term);
-                    }
-                    else
-                    {
-                        weights.put(term, weights.get(term) + tf * BETA * score);
+                        if (!weights.containsKey(term))
+                        {
+                            weights.put(term, tf * BETA * score);
+                            terms.add(term);
+                        }
+                        else
+                        {
+                            weights.put(term, weights.get(term) + tf * BETA * score);
+                        }
                     }
                 }
             }
         }
 
+    }
+    private boolean termIsBad(double size, double numberOfDocs)
+    {
+        return size / numberOfDocs > Index.INDEX_ELIMINATON_CONSTANT;
     }
 }

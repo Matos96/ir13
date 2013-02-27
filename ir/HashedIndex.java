@@ -46,6 +46,10 @@ public class HashedIndex implements Index {
 			return null;
 		return list;
 	}
+	public int getNumberOfDocs() {
+		System.err.println("YOU SILLY MOTHER FUCKER");
+		return 0;
+	}
 
 	/**
 	 * Searches the index for postings matching the query.
