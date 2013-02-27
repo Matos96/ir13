@@ -1,18 +1,16 @@
-/*  
+/*
  *   This file is part of the computer assignment for the
  *   Information Retrieval course at KTH.
- * 
+ *
  *   First version:  Johan Boye, 2010
  *   Second version: Johan Boye, 2012
  *   Additions: Hedvig Kjellström, 2012
  *   Finalized by: Christian Wemstad, 2013
  */
 
-package ir; 
+package ir;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
+import java.util.*;
 
 /**
  * Implements an inverted index as a Hashtable from words to PostingsLists.
@@ -32,6 +30,10 @@ public class HashedIndex implements Index {
 			index.put(token, list);
 		}
 		list.add(docID, offset);
+		HashSet<String> docSet = docTerms.get("" + docID);
+		if(docSet == null)
+			docSet = new HashSet<String>();
+		docSet.add(token);
 	}
 
 	/**
@@ -57,9 +59,9 @@ public class HashedIndex implements Index {
 					return new PostingsList();
 				lists.add(pl);
 			}
-			
+
 			Collections.sort(lists);
-			
+
 			PostingsList all = lists.get(0);
 			lists.remove(0);
 			for(PostingsList pl : lists) {
@@ -79,7 +81,7 @@ public class HashedIndex implements Index {
 			}
 			return all;
 		}
-		return 
+		return
 			null;
 	}
 

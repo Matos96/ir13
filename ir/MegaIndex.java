@@ -300,7 +300,12 @@ public class MegaIndex implements Index
             index.put(token, list);
         }
         list.add(docID, offset);
-
+        HashSet<String> docSet = docTerms.get("" + docID);
+        if(docSet == null) {
+            docSet = new HashSet<String>();
+            docTerms.put("" +docID, docSet);
+        }
+        docSet.add(token);
     }
 
     /**
@@ -377,15 +382,15 @@ public class MegaIndex implements Index
                     if (pl == null)
                         continue;
                     double idf_for_pl = Math.log10(numberOfDocs / pl.size());
-                    double wtq = 1 + Math.log10(1); // log(1) should be number of occurenses
-                    // wtq *= idf_for_pl;
+                    double wtq = query.weights.get(term) * idf_for_pl;
                     for (PostingsEntry post : pl.list)
                     {
+                        // System.out.println("DocID: " + post.docID + " contains: " + docTerms.get("" + post.docID).size() + " terms");
                         PostingsEntry scoreEntry = all.getByDocID(post.docID);
                         if (post.offsets.size() != 0)
                         {
                             // scoreEntry.score += (1 + Math.log10(post.offsets.size())) * idf_for_pl * wtq;
-                            scoreEntry.score += (post.offsets.size()) * idf_for_pl;
+                            scoreEntry.score += (post.offsets.size()) * idf_for_pl * wtq;
                         }
                     }
 
