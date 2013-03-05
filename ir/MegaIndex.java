@@ -370,6 +370,7 @@ public class MegaIndex implements Index
         }
         else if (queryType == Index.RANKED_QUERY)
         {
+            long startTime = System.nanoTime();
             PostingsList all = new PostingsList();
             if (numberOfDocs < 0)
                 numberOfDocs = docIDs.size();
@@ -428,6 +429,7 @@ public class MegaIndex implements Index
                     }
             }
             Collections.sort(all.list);
+            System.out.println("Time spent: " + (System.nanoTime() - startTime));
             return all;
         }
         return null;
