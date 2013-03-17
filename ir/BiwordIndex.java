@@ -64,11 +64,6 @@ public class BiwordIndex implements Index {
                 PostingsList pl = getPostings(biQuery.get(i));
                 if (pl == null) {
                     System.out.println("found empty postinglist for BiTerm: " + biQuery.get(i));
-                    System.out.println("Size: " + index.size());
-                    for (Biword bw : index.keySet()) {
-                        System.out.println(bw + " " + (getPostings(bw) == null ? "false" : "true"));
-
-                    }
                     return new PostingsList();
                 }
                 lists.add(pl);
@@ -99,14 +94,14 @@ public class BiwordIndex implements Index {
                     PostingsList pl = getPostings(biTerm);
                     if (pl == null)
                         continue;
-                    // double idf_for_pl = Math.log10(getNumberOfDocs() / pl.size());
-                    // double wtq = query.weights.get(biTerm) * idf_for_pl;
+                     double idf_for_pl = Math.log10(getNumberOfDocs() / pl.size());
+                     double wtq = 1 * idf_for_pl;
                     for (PostingsEntry post : pl.list) {
                         PostingsEntry scoreEntry = all.getByDocID(post.docID);
                         if (post.offsets.size() != 0) {
                             // scoreEntry.score += (1 + Math.log10(post.offsets.size())) * idf_for_pl * wtq;
                             // System.out.println(scoreEntry.score);
-                            // scoreEntry.score += (post.offsets.size()) * idf_for_pl * wtq;
+                            scoreEntry.score += (post.offsets.size()) * idf_for_pl * wtq;
                         }
                     }
 

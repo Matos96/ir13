@@ -64,7 +64,7 @@ public class SearchGUI extends JFrame
     /** Relative path to links file. */
     private static final String PAGERANK_FILENAME = "svwiki_links/links10000.txt";
 
-    private static final boolean PAGERANK_ON = false;
+    private static final boolean PAGERANK_ON = true;
 
     /*
      *   The nice logotype
