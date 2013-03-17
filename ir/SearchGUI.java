@@ -64,6 +64,8 @@ public class SearchGUI extends JFrame
     /** Relative path to links file. */
     private static final String PAGERANK_FILENAME = "svwiki_links/links10000.txt";
 
+    private static final boolean PAGERANK_ON = false;
+
     /*
      *   The nice logotype
      */
@@ -377,7 +379,7 @@ public class SearchGUI extends JFrame
                 indexer.processFiles(dokDir);
             }
             resultWindow.setText("\n Generating pageranks, please wait...");
-            if (indexer.index.pageRanking == null || indexer.index.pageRanking.size() == 0)
+            if ((indexer.index.pageRanking == null || indexer.index.pageRanking.size() == 0 )&& PAGERANK_ON)
             {
                 PageRank pr = new PageRank(PAGERANK_FILENAME);
                 indexer.addPageRank(pr.m);
@@ -424,6 +426,11 @@ public class SearchGUI extends JFrame
                 i++;
                 indexType = Index.MEGA_INDEX;
             }
+            else if ("-b".equals(args[i]))
+            {
+                i++;
+                indexType = Index.BIWORD_INDEX;
+            }
             else
             {
                 System.err.println( "Unknown option: " + args[i] );
@@ -437,13 +444,18 @@ public class SearchGUI extends JFrame
         {
             if ( indexType == Index.HASHED_INDEX )
             {
-                indexer = new Indexer();
+                indexer = new Indexer(Index.HASHED_INDEX);
             }
-            else
+            else if (indexType == Index.MEGA_INDEX )
             {
                 resultWindow.setText( "\n  Creating MegaIndex, please wait... " );
                 indexer = new Indexer( indexFiles );
                 resultWindow.setText( "\n  Done!" );
+            }
+            else {
+                resultWindow.setText("\n Creating BiwordIndex, please wait...");
+                indexer = new Indexer(Index.BIWORD_INDEX);
+                resultWindow.setText("\n DONE!!!");
             }
         }
     }
