@@ -123,6 +123,20 @@ public class Query
     }
     private boolean termIsBad(double size, double numberOfDocs)
     {
+        // System.out.println("Size: " + size);
+        // System.out.println("numberOfDocs: " + numberOfDocs);
+        // System.out.println("Result: " + (size / numberOfDocs > Index.INDEX_ELIMINATON_CONSTANT));
         return size / numberOfDocs > Index.INDEX_ELIMINATON_CONSTANT;
+    }
+    public boolean queryTermIsBad(String term, Index index)
+    {
+        PostingsList pl = index.getPostings(term);
+        if (pl == null)
+            return false;
+        return  termIsBad((double) pl.size(), (double) index.getNumberOfDocs());
+    }
+    public boolean queryTermIsBad(int position, Index index)
+    {
+        return queryTermIsBad(terms.get(position), index);
     }
 }

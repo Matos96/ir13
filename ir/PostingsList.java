@@ -140,13 +140,16 @@ public class PostingsList implements Serializable, Comparable<PostingsList>
         PostingsList returnList = new PostingsList();
         int i = 0;
         int j = 0;
-        if(secondList == null && firstList == null) {
+        if (secondList == null && firstList == null)
+        {
             return returnList;
         }
-        if(secondList == null) {
+        if (secondList == null)
+        {
             return (PostingsList)firstList.clone();
         }
-        if(firstList == null) {
+        if (firstList == null)
+        {
             return (PostingsList) secondList.clone();
         }
         while (i < secondList.size() && j < firstList.size())
@@ -159,9 +162,10 @@ public class PostingsList implements Serializable, Comparable<PostingsList>
                 j++;
                 i++;
             }
-            else if (secondDoc > firstDoc) {
-            	returnList.addLast(firstDoc, 0);
-            	j++;
+            else if (secondDoc > firstDoc)
+            {
+                returnList.addLast(firstDoc, 0);
+                j++;
             }
             else if (secondDoc < firstDoc)
             {
@@ -233,6 +237,19 @@ public class PostingsList implements Serializable, Comparable<PostingsList>
         }
         return returnList;
     }
+    public static PostingsList moveOffsets(PostingsList old)
+    {
+        PostingsList returnList = new PostingsList();
+        int i = 0;
+        for (PostingsEntry pe : old.list)
+        {
+            for (int offset : pe.offsets)
+            {
+                returnList.add(pe.docID, offset + 1);
+            }
+        }
+        return returnList;
+    }
 
     /*
      * @SuppressWarnings("unchecked") public PostingsList clone() { return new
@@ -278,7 +295,5 @@ public class PostingsList implements Serializable, Comparable<PostingsList>
             j++;
             i++;
         }
-
     }
-
 }

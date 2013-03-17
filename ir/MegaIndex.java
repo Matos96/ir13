@@ -145,6 +145,10 @@ public class MegaIndex implements Index
     }
     public int getNumberOfDocs()
     {
+        if (numberOfDocs == -1)
+        {
+            numberOfDocs = docIDs.size();
+        }
         return numberOfDocs;
     }
 
@@ -341,7 +345,8 @@ public class MegaIndex implements Index
                 PostingsList pl = getPostings(query.terms.get(i));
                 if (pl == null)
                     return new PostingsList();
-                lists.add(pl);
+                else if (!query.queryTermIsBad(i, this))
+                    lists.add(pl);
             }
 
             Collections.sort(lists);
@@ -356,15 +361,40 @@ public class MegaIndex implements Index
         }
         else if (queryType == Index.PHRASE_QUERY)
         {
-            PostingsList all = getPostings(query.terms.getFirst());
-            if (all == null)
-                return null;
-            for (int i = 1; i < query.terms.size(); i++)
+            int i = 0;
+            PostingsList all = null;
+            for (; i < query.terms.size(); i++)
             {
-                PostingsList currentList = getPostings(query.terms.get(i));
-                if (currentList == null)
-                    return null;
-                all = PostingsList.removeAllNotFollowedBy(all, currentList);
+                if (!query.queryTermIsBad(i, this))
+                {
+                    all = getPostings(query.terms.get(i));
+                    System.out.println("Denna termen gillades: " + query.terms.get(i));
+                    i++;
+                    break;
+                }
+                else
+                    System.out.println("Denna termen gillades inte: " + query.terms.get(i));
+            }
+            if (all == null)
+            {
+                System.out.println("Här var det tomt");
+                return null;
+            }
+            for (; i < query.terms.size(); i++)
+            {
+                if (query.queryTermIsBad(i, this))
+                {
+                    all = PostingsList.moveOffsets(all);
+                    System.out.println("Denna termen gillades inte: " + query.terms.get(i));
+                }
+                else
+                {
+                    PostingsList currentList = getPostings(query.terms.get(i));
+                    if (currentList == null)
+                        return null;
+                    all = PostingsList.removeAllNotFollowedBy(all, currentList);
+                    System.out.println("Denna termen gillades också: " + query.terms.get(i));
+                }
             }
             return all;
         }
@@ -372,8 +402,6 @@ public class MegaIndex implements Index
         {
             long startTime = System.nanoTime();
             PostingsList all = new PostingsList();
-            if (numberOfDocs < 0)
-                numberOfDocs = docIDs.size();
             for (String term : query.terms)
             {
                 PostingsList pl = getPostings(term);
@@ -388,7 +416,7 @@ public class MegaIndex implements Index
                     PostingsList pl = getPostings(term);
                     if (pl == null)
                         continue;
-                    double idf_for_pl = Math.log10(numberOfDocs / pl.size());
+                    double idf_for_pl = Math.log10(getNumberOfDocs() / pl.size());
                     if (termIsBad(pl.size()))
                     {
                         continue;
@@ -436,6 +464,6 @@ public class MegaIndex implements Index
     }
     private boolean termIsBad(double size)
     {
-        return size / (double)numberOfDocs > INDEX_ELIMINATON_CONSTANT;
+        return size / (double)getNumberOfDocs() > INDEX_ELIMINATON_CONSTANT;
     }
 }
