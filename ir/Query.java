@@ -9,8 +9,7 @@ package ir;
 
 import java.util.*;
 
-public class Query
-{
+public class Query {
     private static final double ALPHA = 0.1;
     private static final double BETA = 0.9;
     public LinkedList<String> terms = new LinkedList<String>();
@@ -19,18 +18,15 @@ public class Query
     /**
      *  Creates a new empty Query
      */
-    public Query()
-    {
+    public Query() {
     }
 
     /**
      *  Creates a new Query from a string of words
      */
-    public Query( String queryString  )
-    {
+    public Query( String queryString  ) {
         StringTokenizer tok = new StringTokenizer( queryString );
-        while ( tok.hasMoreTokens() )
-        {
+        while ( tok.hasMoreTokens() ) {
             String term = tok.nextToken();
             terms.add(term);
             Double weight = weights.get(term);
@@ -38,8 +34,7 @@ public class Query
                 weight = new Double(0);
             weights.put(term, new Double( 1 + weight));
         }
-        for (String term : terms)
-        {
+        for (String term : terms) {
             weights.put(term, weights.get(term) / terms.size());
         }
 
@@ -48,16 +43,14 @@ public class Query
     /**
      *  Returns the number of terms
      */
-    public int size()
-    {
+    public int size() {
         return terms.size();
     }
 
     /**
      *  Returns a shallow copy of the Query
      */
-    public Query copy()
-    {
+    public Query copy() {
         Query queryCopy = new Query();
         queryCopy.terms = (LinkedList<String>) terms.clone();
         queryCopy.weights = (HashMap<String, Double>) weights.clone();
@@ -67,53 +60,43 @@ public class Query
     /**
      *  Expands the Query using Relevance Feedback
      */
-    public void relevanceFeedback( PostingsList results, boolean[] docIsRelevant, Indexer indexer )
-    {
+    public void relevanceFeedback( PostingsList results, boolean[] docIsRelevant, Indexer indexer ) {
         // results contain the ranked list from the current search
         // docIsRelevant contains the users feedback on which of the 10 first hits are relevant
-        for (String term : terms)
-        {
+        for (String term : terms) {
             weights.put(term, weights.get(term) * ALPHA);
         }
         double score = 0;
-        for (int i = 0; i < docIsRelevant.length; i++)
-        {
+        for (int i = 0; i < docIsRelevant.length; i++) {
             if (docIsRelevant[i])
                 score++;
         }
         score = 1 / score;
-        for (int i = 0; i < docIsRelevant.length; i++)
-        {
-            if (docIsRelevant[i])
-            {
+        for (int i = 0; i < docIsRelevant.length; i++) {
+            if (docIsRelevant[i]) {
                 int docId = results.get(i).docID;
                 HashSet<String> docTerms = indexer.index.docTerms.get("" + docId);
                 // System.out.println(docTerms.size());
                 double docSize = (double) indexer.index.docLengths.get("" + docId);
-                for (String term : docTerms)
-                {
-                    PostingsList pl = indexer.index.getPostings(term);
-                    if (!termIsBad(pl.size(), indexer.index.getNumberOfDocs()))
-                    {
-                        double tf = 0;
-                        for (PostingsEntry pe : pl.list)
-                        {
-                            if (pe.docID == docId)
-                            {
-                                tf = pe.offsets.size();
-                                break;
+                if (docTerms != null) {
+                    for (String term : docTerms) {
+                        PostingsList pl = indexer.index.getPostings(term);
+                        if (!termIsBad(pl.size(), indexer.index.getNumberOfDocs())) {
+                            double tf = 0;
+                            for (PostingsEntry pe : pl.list) {
+                                if (pe.docID == docId) {
+                                    tf = pe.offsets.size();
+                                    break;
+                                }
                             }
-                        }
-                        tf /= docSize;
+                            tf /= docSize;
 
-                        if (!weights.containsKey(term))
-                        {
-                            weights.put(term, tf * BETA * score);
-                            terms.add(term);
-                        }
-                        else
-                        {
-                            weights.put(term, weights.get(term) + tf * BETA * score);
+                            if (!weights.containsKey(term)) {
+                                weights.put(term, tf * BETA * score);
+                                terms.add(term);
+                            } else {
+                                weights.put(term, weights.get(term) + tf * BETA * score);
+                            }
                         }
                     }
                 }
@@ -121,22 +104,19 @@ public class Query
         }
 
     }
-    private boolean termIsBad(double size, double numberOfDocs)
-    {
+    private boolean termIsBad(double size, double numberOfDocs) {
         // System.out.println("Size: " + size);
         // System.out.println("numberOfDocs: " + numberOfDocs);
         // System.out.println("Result: " + (size / numberOfDocs > Index.INDEX_ELIMINATON_CONSTANT));
         return size / numberOfDocs > Index.INDEX_ELIMINATON_CONSTANT;
     }
-    public boolean queryTermIsBad(String term, Index index)
-    {
+    public boolean queryTermIsBad(String term, Index index) {
         PostingsList pl = index.getPostings(term);
         if (pl == null)
             return false;
         return  termIsBad((double) pl.size(), (double) index.getNumberOfDocs());
     }
-    public boolean queryTermIsBad(int position, Index index)
-    {
+    public boolean queryTermIsBad(int position, Index index) {
         return queryTermIsBad(terms.get(position), index);
     }
 }
