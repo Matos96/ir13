@@ -25,11 +25,11 @@ import pagerank.*;
 /**
  *   A graphical interface to the information retrieval system.
  */
-public class SearchGUI extends JFrame
-{
+public class SearchGUI extends JFrame {
 
     /**  The indexer creating the search index. */
     Indexer indexer;
+    Indexer indexerSec;
 
     /**  The query posed by the user, used in search() and relevanceFeedbackSearch() */
     private Query query;
@@ -114,8 +114,7 @@ public class SearchGUI extends JFrame
     /*
      *   Create the GUI.
      */
-    private void createGUI()
-    {
+    private void createGUI() {
         // GUI definition
         setSize( 600, 650 );
         setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
@@ -170,8 +169,7 @@ public class SearchGUI extends JFrame
         p.add( resultPane );
         resultWindow.setFont( resultFont );
         // Relevance feedback
-        for ( int i = 0; i < 10; i++ )
-        {
+        for ( int i = 0; i < 10; i++ ) {
             feedbackBar.add( feedbackButton[i] );
         }
         feedbackBar.add( feedbackExecutor );
@@ -179,45 +177,34 @@ public class SearchGUI extends JFrame
         // Show the interface
         setVisible( true );
 
-        Action search = new AbstractAction()
-        {
-            public void actionPerformed( ActionEvent e )
-            {
+        Action search = new AbstractAction() {
+            public void actionPerformed( ActionEvent e ) {
                 // Normalize the search string and turn it into a Query
                 String queryString = SimpleTokenizer.normalize( queryWindow.getText() );
                 query = new Query( queryString );
                 // Search and print results. Access to the index is synchronized since
                 // we don't want to search at the same time we're indexing new files
                 // (this might corrupt the index).
-                synchronized ( indexLock )
-                {
+                synchronized ( indexLock ) {
                     results = indexer.index.search( query, queryType, rankingType );
                 }
                 StringBuffer buf = new StringBuffer();
-                if ( results != null )
-                {
+                if ( results != null ) {
                     buf.append( "\nFound " + results.size() + " matching document(s)\n\n" );
-                    for ( int i = 0; i < results.size(); i++ )
-                    {
+                    for ( int i = 0; i < results.size(); i++ ) {
                         buf.append( " " + i + ". " );
                         String filename = indexer.index.docIDs.get( "" + results.get(i).docID );
-                        if ( filename == null )
-                        {
+                        if ( filename == null ) {
                             buf.append( "" + results.get(i).docID );
-                        }
-                        else
-                        {
+                        } else {
                             buf.append( filename );
                         }
-                        if ( queryType == Index.RANKED_QUERY )
-                        {
+                        if ( queryType == Index.RANKED_QUERY ) {
                             buf.append( "   " + String.format( "%.5f", results.get(i).score ));
                         }
                         buf.append( "\n" );
                     }
-                }
-                else
-                {
+                } else {
                     buf.append( "\nFound 0 matching document(s)\n\n" );
                 }
                 resultWindow.setText( buf.toString() );
@@ -229,18 +216,14 @@ public class SearchGUI extends JFrame
                                             KeyStroke.getKeyStroke( "ENTER" ),
                                             JComponent.WHEN_FOCUSED );
 
-        Action relevanceFeedbackSearch = new AbstractAction()
-        {
-            public void actionPerformed( ActionEvent e )
-            {
+        Action relevanceFeedbackSearch = new AbstractAction() {
+            public void actionPerformed( ActionEvent e ) {
                 // Check that a ranked search has been made prior to the relevance feedback
                 StringBuffer buf = new StringBuffer();
-                if (( results != null ) && ( queryType == Index.RANKED_QUERY ))
-                {
+                if (( results != null ) && ( queryType == Index.RANKED_QUERY )) {
                     // Read user relevance feedback selections
                     boolean[] docIsRelevant = { false, false, false, false, false, false, false, false, false, false };
-                    for ( int i = 0; i < 10; i++ )
-                    {
+                    for ( int i = 0; i < 10; i++ ) {
                         docIsRelevant[i] = feedbackButton[i].isSelected();
                     }
                     // Expand the current search query with the documents marked as relevant
@@ -249,29 +232,22 @@ public class SearchGUI extends JFrame
                     // Perform a new search with the weighted and expanded query. Access to the index is
                     // synchronized since we don't want to search at the same time we're indexing new files
                     // (this might corrupt the index).
-                    synchronized ( indexLock )
-                    {
+                    synchronized ( indexLock ) {
                         results = indexer.index.search( query, queryType, rankingType );
                     }
                     buf.append( "\nSearch after relevance feedback:\n" );
                     buf.append( "\nFound " + results.size() + " matching document(s)\n\n" );
-                    for ( int i = 0; i < results.size(); i++ )
-                    {
+                    for ( int i = 0; i < results.size(); i++ ) {
                         buf.append( " " + i + ". " );
                         String filename = indexer.index.docIDs.get( "" + results.get(i).docID );
-                        if ( filename == null )
-                        {
+                        if ( filename == null ) {
                             buf.append( "" + results.get(i).docID );
-                        }
-                        else
-                        {
+                        } else {
                             buf.append( filename );
                         }
                         buf.append( "   " + String.format( "%.5f", results.get(i).score ) + "\n" );
                     }
-                }
-                else
-                {
+                } else {
                     buf.append( "\nThere was no returned ranked list to give feedback on.\n\n" );
                 }
                 resultWindow.setText( buf.toString() );
@@ -280,10 +256,8 @@ public class SearchGUI extends JFrame
         };
         feedbackExecutor.addActionListener( relevanceFeedbackSearch );
 
-        Action saveAndQuit = new AbstractAction()
-        {
-            public void actionPerformed( ActionEvent e )
-            {
+        Action saveAndQuit = new AbstractAction() {
+            public void actionPerformed( ActionEvent e ) {
                 resultWindow.setText( "\n  Saving index..." );
                 indexer.index.cleanup();
                 System.exit( 0 );
@@ -292,65 +266,51 @@ public class SearchGUI extends JFrame
         saveItem.addActionListener( saveAndQuit );
 
 
-        Action quit = new AbstractAction()
-        {
-            public void actionPerformed( ActionEvent e )
-            {
+        Action quit = new AbstractAction() {
+            public void actionPerformed( ActionEvent e ) {
                 System.exit( 0 );
             }
         };
         quitItem.addActionListener( quit );
 
 
-        Action setIntersectionQuery = new AbstractAction()
-        {
-            public void actionPerformed( ActionEvent e )
-            {
+        Action setIntersectionQuery = new AbstractAction() {
+            public void actionPerformed( ActionEvent e ) {
                 queryType = Index.INTERSECTION_QUERY;
             }
         };
         intersectionItem.addActionListener( setIntersectionQuery );
 
-        Action setPhraseQuery = new AbstractAction()
-        {
-            public void actionPerformed( ActionEvent e )
-            {
+        Action setPhraseQuery = new AbstractAction() {
+            public void actionPerformed( ActionEvent e ) {
                 queryType = Index.PHRASE_QUERY;
             }
         };
         phraseItem.addActionListener( setPhraseQuery );
 
-        Action setRankedQuery = new AbstractAction()
-        {
-            public void actionPerformed( ActionEvent e )
-            {
+        Action setRankedQuery = new AbstractAction() {
+            public void actionPerformed( ActionEvent e ) {
                 queryType = Index.RANKED_QUERY;
             }
         };
         rankedItem.addActionListener( setRankedQuery );
 
-        Action setTfidfRanking = new AbstractAction()
-        {
-            public void actionPerformed( ActionEvent e )
-            {
+        Action setTfidfRanking = new AbstractAction() {
+            public void actionPerformed( ActionEvent e ) {
                 rankingType = Index.TF_IDF;
             }
         };
         tfidfItem.addActionListener( setTfidfRanking );
 
-        Action setPagerankRanking = new AbstractAction()
-        {
-            public void actionPerformed( ActionEvent e )
-            {
+        Action setPagerankRanking = new AbstractAction() {
+            public void actionPerformed( ActionEvent e ) {
                 rankingType = Index.PAGERANK;
             }
         };
         pagerankItem.addActionListener( setPagerankRanking );
 
-        Action setCombinationRanking = new AbstractAction()
-        {
-            public void actionPerformed( ActionEvent e )
-            {
+        Action setCombinationRanking = new AbstractAction() {
+            public void actionPerformed( ActionEvent e ) {
                 rankingType = Index.COMBINATION;
             }
         };
@@ -368,19 +328,15 @@ public class SearchGUI extends JFrame
      *   search at the same time we're indexing new files (this might
      *   corrupt the index).
      */
-    private void index()
-    {
-        synchronized ( indexLock )
-        {
+    private void index() {
+        synchronized ( indexLock ) {
             resultWindow.setText("\n  Indexing, please wait...");
-            for ( int i = 0; i < dirNames.size(); i++ )
-            {
+            for ( int i = 0; i < dirNames.size(); i++ ) {
                 File dokDir = new File(dirNames.get(i));
                 indexer.processFiles(dokDir);
             }
             resultWindow.setText("\n Generating pageranks, please wait...");
-            if ((indexer.index.pageRanking == null || indexer.index.pageRanking.size() == 0 )&& PAGERANK_ON)
-            {
+            if ((indexer.index.pageRanking == null || indexer.index.pageRanking.size() == 0 ) && PAGERANK_ON) {
                 PageRank pr = new PageRank(PAGERANK_FILENAME);
                 indexer.addPageRank(pr.m);
             }
@@ -395,44 +351,33 @@ public class SearchGUI extends JFrame
     /**
      *   Decodes the command line arguments.
      */
-    private void decodeArgs( String[] args )
-    {
+    private void decodeArgs( String[] args ) {
         int i = 0, j = 0;
-        while ( i < args.length )
-        {
-            if ( "-i".equals( args[i] ))
-            {
+        while ( i < args.length ) {
+            if ( "-i".equals( args[i] )) {
                 i++;
-                if ( j++ >= MAX_NUMBER_OF_INDEX_FILES )
-                {
+                if ( j++ >= MAX_NUMBER_OF_INDEX_FILES ) {
                     System.err.println( "Too many index files specified" );
                     break;
                 }
-                if ( i < args.length )
-                {
+                if ( i < args.length ) {
                     indexFiles.add( args[i++] );
                 }
-            }
-            else if ( "-d".equals( args[i] ))
-            {
+            } else if ( "-d".equals( args[i] )) {
                 i++;
-                if ( i < args.length )
-                {
+                if ( i < args.length ) {
                     dirNames.add( args[i++] );
                 }
-            }
-            else if ( "-m".equals( args[i] ))
-            {
+            } else if ( "-m".equals( args[i] )) {
                 i++;
                 indexType = Index.MEGA_INDEX;
-            }
-            else if ("-b".equals(args[i]))
-            {
+            } else if ("-b".equals(args[i])) {
                 i++;
                 indexType = Index.BIWORD_INDEX;
-            }
-            else
-            {
+            } else if ("-dual").equals(args[i]) {
+                i++;
+                indexType = Index.DUAL_INDEX;
+            } else {
                 System.err.println( "Unknown option: " + args[i] );
                 break;
             }
@@ -440,19 +385,17 @@ public class SearchGUI extends JFrame
         //  It might take a long time to create a MegaIndex. Meanwhile no searches
         //  should be carried out (it would result in a NullPointerException).
         //  Therefore the access to the index must be synchronized.
-        synchronized ( indexLock )
-        {
-            if ( indexType == Index.HASHED_INDEX )
-            {
+        synchronized ( indexLock ) {
+            if ( indexType == Index.HASHED_INDEX ) {
                 indexer = new Indexer(Index.HASHED_INDEX);
-            }
-            else if (indexType == Index.MEGA_INDEX )
-            {
+            } else if (indexType == Index.MEGA_INDEX ) {
                 resultWindow.setText( "\n  Creating MegaIndex, please wait... " );
                 indexer = new Indexer( indexFiles );
                 resultWindow.setText( "\n  Done!" );
-            }
-            else {
+            } else if(indexType == Index.DUAL_INDEX){
+                indexer = new Indexer(indexFiles);
+                indexer = new Indexer(Index.BIWORD_INDEX);
+            } else {
                 resultWindow.setText("\n Creating BiwordIndex, please wait...");
                 indexer = new Indexer(Index.BIWORD_INDEX);
                 resultWindow.setText("\n DONE!!!");
@@ -464,8 +407,7 @@ public class SearchGUI extends JFrame
     /* ----------------------------------------------- */
 
 
-    public static void main( String[] args )
-    {
+    public static void main( String[] args ) {
         SearchGUI s = new SearchGUI();
         s.createGUI();
         s.decodeArgs( args );
