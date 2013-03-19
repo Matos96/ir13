@@ -332,10 +332,13 @@ public class MegaIndex implements Index
         }
     }
 
+    public PostingsList search(Query query, int queryType, int rankingType){
+        return search(query, queryType, rankingType, true);
+    }
     /**
      * Searches the index for postings matching the query.
      */
-    public PostingsList search(Query query, int queryType, int rankingType)
+    public PostingsList search(Query query, int queryType, int rankingType, boolean sort)
     {
         if (queryType == Index.INTERSECTION_QUERY)
         {
@@ -456,7 +459,8 @@ public class MegaIndex implements Index
                         pe.score += (score) * PAGERANK_MULTIPLYER;
                     }
             }
-            Collections.sort(all.list);
+            if(sort)
+                Collections.sort(all.list);
             System.out.println("Time spent: " + (System.nanoTime() - startTime));
             return all;
         }

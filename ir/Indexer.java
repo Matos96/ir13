@@ -59,16 +59,21 @@ public class Indexer
     {
         if (type == Index.HASHED_INDEX)
             index = new HashedIndex();
-        else
+        else {
             index = new BiwordIndex();
+            // System.out.println("Using biwordIndex");
+        }
     }
 
     /**
      * Initializes the index as a MegaIndex.
      */
-    public Indexer(LinkedList<String> indexfiles)
+    public Indexer(int type, LinkedList<String> indexfiles)
     {
-        index = new MegaIndex(indexfiles);
+        if(type == Index.DUAL_INDEX)
+            index = new DualIndex(indexfiles);
+        else
+            index = new MegaIndex(indexfiles);
     }
 
     /* ----------------------------------------------- */

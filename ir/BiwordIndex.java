@@ -52,7 +52,10 @@ public class BiwordIndex implements Index {
             return null;
         return list;
     }
-    public PostingsList search( Query query, int queryType, int rankingType ) {
+    public PostingsList search(Query query, int queryType, int rankingType) {
+        return search(query, queryType, rankingType, true);
+    }
+    public PostingsList search( Query query, int queryType, int rankingType, boolean sort ) {
         if (query.terms.size() <= 1)
             return null;
         ArrayList<Biword> biQuery = generateBiwords(query.terms);
@@ -124,7 +127,8 @@ public class BiwordIndex implements Index {
                         pe.score += (score) * PAGERANK_MULTIPLYER;
                     }
             }
-            Collections.sort(all.list);
+            if(sort)
+                Collections.sort(all.list);
             System.out.println("Time spent: " + (System.nanoTime() - startTime));
             return all;
         }

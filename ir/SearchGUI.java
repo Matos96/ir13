@@ -29,7 +29,6 @@ public class SearchGUI extends JFrame {
 
     /**  The indexer creating the search index. */
     Indexer indexer;
-    Indexer indexerSec;
 
     /**  The query posed by the user, used in search() and relevanceFeedbackSearch() */
     private Query query;
@@ -370,12 +369,15 @@ public class SearchGUI extends JFrame {
                 }
             } else if ( "-m".equals( args[i] )) {
                 i++;
+                System.out.println("Setting type megaIndex");
                 indexType = Index.MEGA_INDEX;
             } else if ("-b".equals(args[i])) {
                 i++;
+                System.out.println("Setting type biwordIndex");
                 indexType = Index.BIWORD_INDEX;
-            } else if ("-dual").equals(args[i]) {
+            } else if ("-dual".equals(args[i])) {
                 i++;
+                System.out.println("Setting type DualIndex");
                 indexType = Index.DUAL_INDEX;
             } else {
                 System.err.println( "Unknown option: " + args[i] );
@@ -390,15 +392,17 @@ public class SearchGUI extends JFrame {
                 indexer = new Indexer(Index.HASHED_INDEX);
             } else if (indexType == Index.MEGA_INDEX ) {
                 resultWindow.setText( "\n  Creating MegaIndex, please wait... " );
-                indexer = new Indexer( indexFiles );
+                indexer = new Indexer(Index.MEGA_INDEX, indexFiles );
                 resultWindow.setText( "\n  Done!" );
             } else if(indexType == Index.DUAL_INDEX){
-                indexer = new Indexer(indexFiles);
-                indexer = new Indexer(Index.BIWORD_INDEX);
+                resultWindow.setText( "\n  Creating DualIndex, please wait... " );
+                indexer = new Indexer(Index.DUAL_INDEX, indexFiles);
+                resultWindow.setText("\n DONE!!!");
             } else {
                 resultWindow.setText("\n Creating BiwordIndex, please wait...");
                 indexer = new Indexer(Index.BIWORD_INDEX);
                 resultWindow.setText("\n DONE!!!");
+                // System.out.println("HEJ");
             }
         }
     }

@@ -18,7 +18,7 @@ public interface Index {
     public static final int HASHED_INDEX = 0;
     public static final int MEGA_INDEX = 1;
     public static final int BIWORD_INDEX = 2;
-    public static filal int DUAL_INDEX = 3;
+    public static final int DUAL_INDEX = 3;
 
     /* Query types */
     public static final int INTERSECTION_QUERY = 0;
@@ -42,6 +42,7 @@ public interface Index {
     public void insert( String token, int docID, int offset );
     public PostingsList getPostings( String token );
     public PostingsList search( Query query, int queryType, int rankingType );
+    public PostingsList search( Query query, int queryType, int rankingType, boolean sort );
     public void cleanup();
     public int getNumberOfDocs();
 

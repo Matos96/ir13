@@ -283,8 +283,9 @@ public class PostingsList implements Serializable, Comparable<PostingsList>
             {
                 i++;
             }
-            else     //If the same document, drop and continue.
+            else     //If the same document, merge scores.
             {
+                get(i).score += otherList.get(j).score;
                 i++;
                 j++;
             }
