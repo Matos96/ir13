@@ -13,6 +13,7 @@ public class DualIndex implements Index {
     /** The index as a hashtable. */
     private Index megaIndex;
     private Index biwordIndex;
+    private static final int K = 10;
 
     public DualIndex(LinkedList<String> indexfiles) {
         megaIndex = new MegaIndex(indexfiles);
@@ -32,8 +33,12 @@ public class DualIndex implements Index {
         return null;
     }
     public PostingsList search( Query query, int queryType, int rankingType ) {
-        PostingsList megaIndexPL = megaIndex.search(query, queryType, rankingType, false);
         PostingsList biwordIndexPL = biwordIndex.search(query, queryType, rankingType, false);
+        if(biwordIndexPL.size() >= K) {
+            Collections.sort(biwordIndexPL.list);
+            return biwordIndexPL;
+        }
+        PostingsList megaIndexPL = megaIndex.search(query, queryType, rankingType, false);
         megaIndexPL.merge(biwordIndexPL, 1);
         Collections.sort(megaIndexPL.list);
         return megaIndexPL;
