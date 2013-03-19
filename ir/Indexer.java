@@ -55,10 +55,13 @@ public class Indexer {
     public Indexer(int type) {
         if (type == Index.HASHED_INDEX)
             index = new HashedIndex();
-        else {
+        else if (type == Index.BIWORD_INDEX){
             index = new BiwordIndex();
             // System.out.println("Using biwordIndex");
         }
+        else if(type == Index.TRIWORD_INDEX){
+            index = new TriwordIndex();
+        } else {System.out.println("ERROR: NO INDEX TO PICK");}
     }
 
     /**
@@ -92,7 +95,7 @@ public class Indexer {
                 System.err.println("Indexing " + f.getPath());
                 // First register the document and get a docID
                 int docID;
-                if (index instanceof HashedIndex || index instanceof BiwordIndex) {
+                if (index instanceof HashedIndex || index instanceof BiwordIndex || index instanceof TriwordIndex) {
                     // For HashedIndex, use integers.
                     docID = generateDocID();
                 } else {

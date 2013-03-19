@@ -375,6 +375,10 @@ public class SearchGUI extends JFrame {
                 i++;
                 System.out.println("Setting type biwordIndex");
                 indexType = Index.BIWORD_INDEX;
+            }   else if ("-t".equals(args[i])) {
+                i++;
+                System.out.println("Setting type triwordIndex");
+                indexType = Index.TRIWORD_INDEX;
             } else if ("-dual".equals(args[i])) {
                 i++;
                 System.out.println("Setting type DualIndex");
@@ -397,6 +401,10 @@ public class SearchGUI extends JFrame {
             } else if (indexType == Index.DUAL_INDEX) {
                 resultWindow.setText( "\n  Creating DualIndex, please wait... " );
                 indexer = new Indexer(Index.DUAL_INDEX, indexFiles);
+                resultWindow.setText("\n DONE!!!");
+            } else if (indexType == Index.TRIWORD_INDEX) {
+                resultWindow.setText( "\n  Creating TriwordIndex, please wait... " );
+                indexer = new Indexer(Index.TRIWORD_INDEX);
                 resultWindow.setText("\n DONE!!!");
             } else {
                 resultWindow.setText("\n Creating BiwordIndex, please wait...");

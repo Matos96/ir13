@@ -11,6 +11,8 @@ runb: build
 run: build
 	java -Xmx1024m -cp .:pdfbox:megamap ir.SearchGUI -d 1000 -m
 
+runt: build
+	java -Xmx1024m -cp .:pdfbox:megamap ir.SearchGUI -d 1000 -t
 
 rundual: build
 	java -Xmx1024m -cp .:pdfbox:megamap ir.SearchGUI -d 1000 -dual

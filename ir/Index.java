@@ -19,6 +19,7 @@ public interface Index {
     public static final int MEGA_INDEX = 1;
     public static final int BIWORD_INDEX = 2;
     public static final int DUAL_INDEX = 3;
+    public static final int TRIWORD_INDEX = 4;
 
     /* Query types */
     public static final int INTERSECTION_QUERY = 0;
@@ -31,7 +32,8 @@ public interface Index {
     public static final int COMBINATION = 2;
 
     public static final double PAGERANK_MULTIPLYER = 4;
-    public static final double INDEX_ELIMINATON_CONSTANT = 0.25;
+    // public static final double INDEX_ELIMINATON_CONSTANT = 0.25;
+    public static final double INDEX_ELIMINATON_CONSTANT = 100;
 
 
     public HashMap<String, String> docIDs = new HashMap<String, String>();
