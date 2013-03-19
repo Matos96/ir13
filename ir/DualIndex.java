@@ -38,6 +38,7 @@ public class DualIndex implements Index {
             Collections.sort(biwordIndexPL.list);
             return biwordIndexPL;
         }
+        // System.out.println("Used docID in biword: " + biwordIndexPL.toString());
         PostingsList megaIndexPL = megaIndex.search(query, queryType, rankingType, false);
         megaIndexPL.merge(biwordIndexPL, 1);
         Collections.sort(megaIndexPL.list);

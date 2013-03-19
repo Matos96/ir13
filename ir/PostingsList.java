@@ -216,7 +216,12 @@ public class PostingsList implements Serializable, Comparable<PostingsList> {
 
     @Override
     public String toString() {
-        return list.toString();
+        String s = "[";
+        for (PostingsEntry e : list) {
+            s += e.docID + " ";
+        }
+        return s + "]";
+        // return list.toString();
     }
     public void merge(PostingsList otherList) {
         merge(otherList, 0);
