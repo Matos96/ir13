@@ -21,8 +21,7 @@ import com.larvalabs.megamap.MegaMap;
 import com.larvalabs.megamap.MegaMapException;
 import com.larvalabs.megamap.MegaMapManager;
 
-public class MegaIndex implements Index
-{
+public class MegaIndex implements Index {
 
     /**
      * The index as a hash map that can also extend to secondary memory if
@@ -49,16 +48,12 @@ public class MegaIndex implements Index
     /**
      * Create a new index and invent a name for it.
      */
-    public MegaIndex()
-    {
-        try
-        {
+    public MegaIndex() {
+        try {
             manager = MegaMapManager.getMegaMapManager();
             index = manager
                     .createMegaMap(generateFilename(), path, true, false);
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -66,87 +61,65 @@ public class MegaIndex implements Index
     /**
      * Create a MegaIndex, possibly from a list of smaller indexes.
      */
-    public MegaIndex(LinkedList<String> indexfiles)
-    {
-        try
-        {
+    public MegaIndex(LinkedList<String> indexfiles) {
+        try {
             manager = MegaMapManager.getMegaMapManager();
-            if (indexfiles.size() == 0)
-            {
+            if (indexfiles.size() == 0) {
                 // No index file names specified. Construct a new index and
                 // invent a name for it.
                 index = manager.createMegaMap(generateFilename(), path, true,
                                               false);
-            }
-            else if (indexfiles.size() == 1)
-            {
+            } else if (indexfiles.size() == 1) {
                 // Read the specified index from file
                 index = manager.createMegaMap(indexfiles.get(0), path, true,
                                               false);
                 HashMap<String, String> m = (HashMap<String, String>) index
                                             .get("..docIDs");
-                if (m == null)
-                {
+                if (m == null) {
                     System.err
                     .println("Couldn't retrieve the associations between docIDs and document names");
-                }
-                else
-                {
+                } else {
                     docIDs.putAll(m);
                 }
 
                 HashMap<String, Integer> m2 = (HashMap<String, Integer>) index
                                               .get("..docLengths");
-                if (m2 == null)
-                {
+                if (m2 == null) {
                     System.err
                     .println("Couldn't retrieve the docLengths");
-                }
-                else
-                {
+                } else {
                     docLengths.putAll(m2);
                 }
 
                 HashMap<String, Double> m3 = (HashMap<String, Double>) index
                                              .get("..pageRanking");
-                if (m3 == null)
-                {
+                if (m3 == null) {
                     System.err
                     .println("Couldn't retrieve the pageRanking");
-                }
-                else
-                {
+                } else {
                     pageRanking.putAll(m3);
                 }
 
 
-            }
-            else
-            {
+            } else {
                 // Merge the specified index files into a large index.
                 MegaMap[] indexesToBeMerged = new MegaMap[indexfiles.size()];
-                for (int k = 0; k < indexfiles.size(); k++)
-                {
+                for (int k = 0; k < indexfiles.size(); k++) {
                     System.err.println(indexfiles.get(k));
                     indexesToBeMerged[k] = manager.createMegaMap(
                                                indexfiles.get(k), path, true, false);
                 }
                 index = merge(indexesToBeMerged);
-                for (int k = 0; k < indexfiles.size(); k++)
-                {
+                for (int k = 0; k < indexfiles.size(); k++) {
                     manager.removeMegaMap(indexfiles.get(k));
                 }
             }
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
-    public int getNumberOfDocs()
-    {
-        if (numberOfDocs == -1)
-        {
+    public int getNumberOfDocs() {
+        if (numberOfDocs == -1) {
             numberOfDocs = docIDs.size();
         }
         return numberOfDocs;
@@ -155,8 +128,7 @@ public class MegaIndex implements Index
     /**
      * Generates unique names for index files
      */
-    String generateFilename()
-    {
+    String generateFilename() {
         String s = "index_" + Math.abs((new java.util.Date()).hashCode());
         System.err.println(s);
         return s;
@@ -166,8 +138,7 @@ public class MegaIndex implements Index
      * It is ABSOLUTELY ESSENTIAL to run this method before terminating the JVM,
      * otherwise the index files might become corrupted.
      */
-    public void cleanup()
-    {
+    public void cleanup() {
         // Save the docID-filename association list in the MegaMap as well
         index.put("..docIDs", docIDs);
         index.put("..docLengths", docLengths);
@@ -179,40 +150,31 @@ public class MegaIndex implements Index
     /**
      * Returns the dictionary (the set of terms in the index) as a HashSet.
      */
-    public Set<String> getDictionary()
-    {
+    public Set<String> getDictionary() {
         return index.getKeys();
     }
 
     /**
      * Merges several indexes into one.
      */
-    MegaMap merge(MegaMap[] indexes)
-    {
-        try
-        {
+    MegaMap merge(MegaMap[] indexes) {
+        try {
             MegaMap res = manager.createMegaMap(generateFilename(), path, true,
                                                 false);
-            for (MegaMap index : indexes)
-            {
+            for (MegaMap index : indexes) {
 
 
                 @SuppressWarnings("unchecked")
                 Set<String> keys = (Set<String>) index.getKeys();
-                for (String s : keys)
-                {
+                for (String s : keys) {
                     /* Fixing names of files <-> docID */
-                    if (s.equals("..docIDs"))
-                    {
+                    if (s.equals("..docIDs")) {
                         HashMap<String, String> m = (HashMap<String, String>) index
                                                     .get("..docIDs");
-                        if (m == null)
-                        {
+                        if (m == null) {
                             System.err
                             .println("Couldn't retrieve the associations between docIDs and document names");
-                        }
-                        else
-                        {
+                        } else {
                             docIDs.putAll(m);
                         }
                         continue;
@@ -220,17 +182,13 @@ public class MegaIndex implements Index
                     /* End of fixing name */
 
                     /* Finxing docLength */
-                    if (s.equals("..docLengths"))
-                    {
+                    if (s.equals("..docLengths")) {
                         HashMap<String, Integer> m = (HashMap<String, Integer>) index
                                                      .get("..docLengths");
-                        if (m == null)
-                        {
+                        if (m == null) {
                             System.err
                             .println("Couldn't retrieve the docLengths");
-                        }
-                        else
-                        {
+                        } else {
                             docLengths.putAll(m);
                         }
                         continue;
@@ -239,48 +197,36 @@ public class MegaIndex implements Index
 
 
                     /* Finxing docLength */
-                    if (s.equals("..pageRanking"))
-                    {
+                    if (s.equals("..pageRanking")) {
                         HashMap<String, Double> m = (HashMap<String, Double>) index
                                                     .get("..pageRanking");
-                        if (m == null)
-                        {
+                        if (m == null) {
                             System.err
                             .println("Couldn't retrieve the pageRanking");
-                        }
-                        else
-                        {
+                        } else {
                             pageRanking.putAll(m);
                         }
                         continue;
                     }
                     /* End of fixing docLength */
 
-                    if (res.hasKey(s))
-                    {
-                        try
-                        {
+                    if (res.hasKey(s)) {
+                        try {
                             PostingsList pl = (PostingsList) res.get(s);
                             if (pl != null && index.get(s) != null)
                                 pl.merge((PostingsList) index.get(s));
-                            else if (index.get(s) != null)
-                            {
+                            else if (index.get(s) != null) {
                                 pl = (PostingsList) index.get(s);
                             }
-                        }
-                        catch (ClassCastException e)
-                        {
+                        } catch (ClassCastException e) {
                             System.out.println("error");
                         }
-                    }
-                    else if (s != null && index.get(s) != null)
+                    } else if (s != null && index.get(s) != null)
                         res.put(s, (PostingsList)((PostingsList) index.get(s)).clone());
                 }
             }
             return res;
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
@@ -289,27 +235,21 @@ public class MegaIndex implements Index
     /**
      * Inserts this token in the hashtable.
      */
-    public void insert(String token, int docID, int offset)
-    {
+    public void insert(String token, int docID, int offset) {
         PostingsList list = null;
-        try
-        {
+        try {
             list = (PostingsList) index.get(token);
-        }
-        catch (MegaMapException e)
-        {
+        } catch (MegaMapException e) {
             e.printStackTrace();
             System.exit(1);
         }
-        if (list == null)
-        {
+        if (list == null) {
             list = new PostingsList();
             index.put(token, list);
         }
         list.add(docID, offset);
         HashSet<String> docSet = docTerms.get("" + docID);
-        if (docSet == null)
-        {
+        if (docSet == null) {
             docSet = new HashSet<String>();
             docTerms.put("" + docID, docSet);
         }
@@ -320,31 +260,24 @@ public class MegaIndex implements Index
      * Returns the postings for a specific term, or null if the term is not in
      * the index.
      */
-    public PostingsList getPostings(String token)
-    {
-        try
-        {
+    public PostingsList getPostings(String token) {
+        try {
             return (PostingsList) index.get(token);
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             return new PostingsList();
         }
     }
 
-    public PostingsList search(Query query, int queryType, int rankingType){
+    public PostingsList search(Query query, int queryType, int rankingType) {
         return search(query, queryType, rankingType, true);
     }
     /**
      * Searches the index for postings matching the query.
      */
-    public PostingsList search(Query query, int queryType, int rankingType, boolean sort)
-    {
-        if (queryType == Index.INTERSECTION_QUERY)
-        {
+    public PostingsList search(Query query, int queryType, int rankingType, boolean sort) {
+        if (queryType == Index.INTERSECTION_QUERY) {
             ArrayList<PostingsList> lists = new ArrayList<PostingsList>();
-            for (int i = 0; i < query.terms.size(); i++)
-            {
+            for (int i = 0; i < query.terms.size(); i++) {
                 PostingsList pl = getPostings(query.terms.get(i));
                 if (pl == null)
                     return new PostingsList();
@@ -356,42 +289,31 @@ public class MegaIndex implements Index
 
             PostingsList all = lists.get(0);
             lists.remove(0);
-            for (PostingsList pl : lists)
-            {
+            for (PostingsList pl : lists) {
                 all = PostingsList.removeAllNotIn(all, pl);
             }
             return all;
-        }
-        else if (queryType == Index.PHRASE_QUERY)
-        {
+        } else if (queryType == Index.PHRASE_QUERY) {
             int i = 0;
             PostingsList all = null;
-            for (; i < query.terms.size(); i++)
-            {
-                if (!query.queryTermIsBad(i, this))
-                {
+            for (; i < query.terms.size(); i++) {
+                if (!query.queryTermIsBad(i, this)) {
                     all = getPostings(query.terms.get(i));
                     System.out.println("Denna termen gillades: " + query.terms.get(i));
                     i++;
                     break;
-                }
-                else
+                } else
                     System.out.println("Denna termen gillades inte: " + query.terms.get(i));
             }
-            if (all == null)
-            {
+            if (all == null) {
                 System.out.println("Här var det tomt");
                 return null;
             }
-            for (; i < query.terms.size(); i++)
-            {
-                if (query.queryTermIsBad(i, this))
-                {
+            for (; i < query.terms.size(); i++) {
+                if (query.queryTermIsBad(i, this)) {
                     all = PostingsList.moveOffsets(all);
                     System.out.println("Denna termen gillades inte: " + query.terms.get(i));
-                }
-                else
-                {
+                } else {
                     PostingsList currentList = getPostings(query.terms.get(i));
                     if (currentList == null)
                         return null;
@@ -400,37 +322,29 @@ public class MegaIndex implements Index
                 }
             }
             return all;
-        }
-        else if (queryType == Index.RANKED_QUERY)
-        {
+        } else if (queryType == Index.RANKED_QUERY) {
             long startTime = System.nanoTime();
             PostingsList all = new PostingsList();
-            for (String term : query.terms)
-            {
+            for (String term : query.terms) {
                 PostingsList pl = getPostings(term);
                 if (pl != null && !termIsBad(pl.size()))
                     all = PostingsList.union(all, pl);
             }
 
-            if (rankingType == Index.TF_IDF || rankingType == Index.COMBINATION)
-            {
-                for (String term : query.terms)
-                {
+            if (rankingType == Index.TF_IDF || rankingType == Index.COMBINATION) {
+                for (String term : query.terms) {
                     PostingsList pl = getPostings(term);
                     if (pl == null)
                         continue;
                     double idf_for_pl = Math.log10(getNumberOfDocs() / pl.size());
-                    if (termIsBad(pl.size()))
-                    {
+                    if (termIsBad(pl.size())) {
                         continue;
                     }
                     double wtq = query.weights.get(term) * idf_for_pl;
-                    for (PostingsEntry post : pl.list)
-                    {
+                    for (PostingsEntry post : pl.list) {
                         // System.out.println("DocID: " + post.docID + " contains: " + docTerms.get("" + post.docID).size() + " terms");
                         PostingsEntry scoreEntry = all.getByDocID(post.docID);
-                        if (post.offsets.size() != 0)
-                        {
+                        if (post.offsets.size() != 0) {
                             // scoreEntry.score += (1 + Math.log10(post.offsets.size())) * idf_for_pl * wtq;
                             // System.out.println(scoreEntry.score);
                             scoreEntry.score += (post.offsets.size()) * idf_for_pl * wtq;
@@ -438,19 +352,16 @@ public class MegaIndex implements Index
                     }
 
                 }
-                for (PostingsEntry post : all.list)
-                {
+                for (PostingsEntry post : all.list) {
                     // System.out.println(docLengths.get("" + post.docID));
                     post.score /=   docLengths.get("" + post.docID);
                     // System.out.println(docLengths.get("" + post.docID));
                 }
             }
 
-            if (rankingType == Index.PAGERANK || rankingType == Index.COMBINATION)
-            {
+            if (rankingType == Index.PAGERANK || rankingType == Index.COMBINATION) {
                 if (pageRanking != null)
-                    for (PostingsEntry pe : all.list)
-                    {
+                    for (PostingsEntry pe : all.list) {
                         int docID = pe.docID;
                         // System.out.println(docID);
                         // System.out.println(pageRanking.size());
@@ -459,15 +370,14 @@ public class MegaIndex implements Index
                         pe.score += (score) * PAGERANK_MULTIPLYER;
                     }
             }
-            if(sort)
+            if (sort)
                 Collections.sort(all.list);
             System.out.println("Time spent: " + (System.nanoTime() - startTime));
             return all;
         }
         return null;
     }
-    private boolean termIsBad(double size)
-    {
+    private boolean termIsBad(double size) {
         return size / (double)getNumberOfDocs() > INDEX_ELIMINATON_CONSTANT;
     }
 }

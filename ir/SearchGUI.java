@@ -394,7 +394,7 @@ public class SearchGUI extends JFrame {
                 resultWindow.setText( "\n  Creating MegaIndex, please wait... " );
                 indexer = new Indexer(Index.MEGA_INDEX, indexFiles );
                 resultWindow.setText( "\n  Done!" );
-            } else if(indexType == Index.DUAL_INDEX){
+            } else if (indexType == Index.DUAL_INDEX) {
                 resultWindow.setText( "\n  Creating DualIndex, please wait... " );
                 indexer = new Indexer(Index.DUAL_INDEX, indexFiles);
                 resultWindow.setText("\n DONE!!!");

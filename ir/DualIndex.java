@@ -27,14 +27,14 @@ public class DualIndex implements Index {
         System.out.println("Wrong getPostings()");
         return null;
     }
-    public PostingsList search( Query query, int queryType, int rankingType, boolean sort){
+    public PostingsList search( Query query, int queryType, int rankingType, boolean sort) {
         System.out.println("Wrong call search in dual");
         return null;
     }
     public PostingsList search( Query query, int queryType, int rankingType ) {
         PostingsList megaIndexPL = megaIndex.search(query, queryType, rankingType, false);
         PostingsList biwordIndexPL = biwordIndex.search(query, queryType, rankingType, false);
-        megaIndexPL.merge(biwordIndexPL);
+        megaIndexPL.merge(biwordIndexPL, 1);
         Collections.sort(megaIndexPL.list);
         return megaIndexPL;
     }

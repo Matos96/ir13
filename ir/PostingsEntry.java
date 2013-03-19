@@ -12,24 +12,21 @@ package ir;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-public class PostingsEntry implements Comparable<PostingsEntry>, Serializable
-{
+public class PostingsEntry implements Comparable<PostingsEntry>, Serializable {
 
     private static final long serialVersionUID = 8415974529423644037L;
     public int docID;
     public double score;
     public ArrayList<Integer> offsets;
 
-    public PostingsEntry(int docID, int offset, double score)
-    {
+    public PostingsEntry(int docID, int offset, double score) {
         this.docID = docID;
         this.score = score;
         offsets = new ArrayList<Integer>();
         offsets.add(offset);
     }
 
-    public PostingsEntry(int docID, ArrayList<Integer> offsets, double score)
-    {
+    public PostingsEntry(int docID, ArrayList<Integer> offsets, double score) {
         this.docID = docID;
         this.score = score;
         this.offsets = offsets;
@@ -42,8 +39,7 @@ public class PostingsEntry implements Comparable<PostingsEntry>, Serializable
      * The comparison is defined so that entries will be put in descending
      * order.
      */
-    public int compareTo(PostingsEntry other)
-    {
+    public int compareTo(PostingsEntry other) {
         return Double.compare(other.score, score);
     }
 
@@ -53,11 +49,9 @@ public class PostingsEntry implements Comparable<PostingsEntry>, Serializable
      * false; }
      */
 
-    public void addOffset(int offset)
-    {
+    public void addOffset(int offset) {
         int index = 0;
-        for (Integer i : offsets)
-        {
+        for (Integer i : offsets) {
             if (offset == i)
                 return;
             else if (offset > i)
@@ -68,8 +62,7 @@ public class PostingsEntry implements Comparable<PostingsEntry>, Serializable
         offsets.add(index, offset);
     }
 
-    public Object clone() throws CloneNotSupportedException
-    {
+    public Object clone() throws CloneNotSupportedException {
         // super.clone();
         @SuppressWarnings("unchecked")
         ArrayList<Integer> clone = (ArrayList<Integer>) offsets.clone();
@@ -77,8 +70,7 @@ public class PostingsEntry implements Comparable<PostingsEntry>, Serializable
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return  docID + ": " + offsets.toString();
     }
 

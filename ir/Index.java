@@ -34,8 +34,8 @@ public interface Index {
     public static final double INDEX_ELIMINATON_CONSTANT = 0.25;
 
 
-    public HashMap<String, String> docIDs = new HashMap<String,String>();
-    public HashMap<String,Integer> docLengths = new HashMap<String,Integer>();
+    public HashMap<String, String> docIDs = new HashMap<String, String>();
+    public HashMap<String, Integer> docLengths = new HashMap<String, Integer>();
     public HashMap<String, Double> pageRanking = new HashMap<String, Double>();
     public HashMap<String, HashSet<String>> docTerms = new HashMap<String, HashSet<String>>();
 

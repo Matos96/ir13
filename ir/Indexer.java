@@ -27,8 +27,7 @@ import java.util.HashMap;
 /**
  * Processes a directory structure and indexes all PDF and text files.
  */
-public class Indexer
-{
+public class Indexer {
 
     /** The index to be built up by this indexer. */
     public Index index;
@@ -39,14 +38,12 @@ public class Indexer
     /* ----------------------------------------------- */
 
     /** Generates a new document identifier as an integer. */
-    private int generateDocID()
-    {
+    private int generateDocID() {
         return lastDocID++;
     }
 
     /** Generates a new document identifier based on the file name. */
-    private int generateDocID(String s)
-    {
+    private int generateDocID(String s) {
         return s.hashCode();
     }
 
@@ -55,8 +52,7 @@ public class Indexer
     /**
      * Initializes the index as a HashedIndex.
      */
-    public Indexer(int type)
-    {
+    public Indexer(int type) {
         if (type == Index.HASHED_INDEX)
             index = new HashedIndex();
         else {
@@ -68,9 +64,8 @@ public class Indexer
     /**
      * Initializes the index as a MegaIndex.
      */
-    public Indexer(int type, LinkedList<String> indexfiles)
-    {
-        if(type == Index.DUAL_INDEX)
+    public Indexer(int type, LinkedList<String> indexfiles) {
+        if (type == Index.DUAL_INDEX)
             index = new DualIndex(indexfiles);
         else
             index = new MegaIndex(indexfiles);
@@ -82,84 +77,61 @@ public class Indexer
      * Tokenizes and indexes the file @code{f}. If @code{f} is a directory, all
      * its files and subdirectories are recursively processed.
      */
-    public void processFiles(File f)
-    {
+    public void processFiles(File f) {
         // do not try to index fs that cannot be read
-        if (f.canRead())
-        {
-            if (f.isDirectory())
-            {
+        if (f.canRead()) {
+            if (f.isDirectory()) {
                 String[] fs = f.list();
                 // an IO error could occur
-                if (fs != null)
-                {
-                    for (int i = 0; i < fs.length; i++)
-                    {
+                if (fs != null) {
+                    for (int i = 0; i < fs.length; i++) {
                         processFiles(new File(f, fs[i]));
                     }
                 }
-            }
-            else
-            {
+            } else {
                 System.err.println("Indexing " + f.getPath());
                 // First register the document and get a docID
                 int docID;
-                if (index instanceof HashedIndex || index instanceof BiwordIndex)
-                {
+                if (index instanceof HashedIndex || index instanceof BiwordIndex) {
                     // For HashedIndex, use integers.
                     docID = generateDocID();
-                }
-                else
-                {
+                } else {
                     // For MegaIndex, use hash codes based on file names.
-                    try
-                    {
+                    try {
                         docID = generateDocID(f.getCanonicalPath());
-                    }
-                    catch (IOException e)
-                    {
+                    } catch (IOException e) {
                         docID = generateDocID(f.getPath());
                     }
                 }
                 index.docIDs.put("" + docID, f.getPath());
-                try
-                {
+                try {
                     // Read the first few bytes of the file to see if it is
                     // likely to be a PDF
                     Reader reader = new FileReader(f);
                     char[] buf = new char[4];
                     reader.read(buf, 0, 4);
                     if (buf[0] == '%' && buf[1] == 'P' && buf[2] == 'D'
-                            && buf[3] == 'F')
-                    {
+                            && buf[3] == 'F') {
                         // We assume this is a PDF file
-                        try
-                        {
+                        try {
                             String contents = extractPDFContents(f);
                             reader = new StringReader(contents);
-                        }
-                        catch (IOException e)
-                        {
+                        } catch (IOException e) {
                             // Perhaps it wasn't a PDF file after all
                             reader = new FileReader(f);
                         }
-                    }
-                    else
-                    {
+                    } else {
                         // We hope this is ordinary text
                         reader = new FileReader(f);
                     }
                     SimpleTokenizer tok = new SimpleTokenizer(reader);
                     int offset = 0;
-                    while (tok.hasMoreTokens())
-                    {
+                    while (tok.hasMoreTokens()) {
                         insertIntoIndex(docID, tok.nextToken(), offset++);
                     }
                     index.docLengths.put("" + docID, offset);
                     reader.close();
-                }
-                catch (IOException e)
-                {
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
@@ -171,8 +143,7 @@ public class Indexer
     /**
      * Extracts the textual contents from a PDF file as one long string.
      */
-    public String extractPDFContents(File f) throws IOException
-    {
+    public String extractPDFContents(File f) throws IOException {
         FileInputStream fi = new FileInputStream(f);
         PDFParser parser = new PDFParser(fi);
         parser.parse();
@@ -189,25 +160,19 @@ public class Indexer
     /**
      * Indexes one token.
      */
-    public void insertIntoIndex(int docID, String token, int offset)
-    {
+    public void insertIntoIndex(int docID, String token, int offset) {
         index.insert(token, docID, offset);
     }
 
-    public void addPageRank(HashMap<Integer, Double> al)
-    {
-        for (String docID : index.docIDs.keySet())
-        {
+    public void addPageRank(HashMap<Integer, Double> al) {
+        for (String docID : index.docIDs.keySet()) {
             int fileInt = -1;
-            try
-            {
+            try {
                 String value = index.docIDs.get(docID);
                 int from = value.lastIndexOf('/');
                 int to = value.lastIndexOf('.');
                 fileInt = Integer.parseInt(value.substring(from + 1, to));
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 System.err.println("Failed to parse!");
                 System.exit(-1);
             }
